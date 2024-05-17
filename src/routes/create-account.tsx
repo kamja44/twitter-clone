@@ -43,7 +43,7 @@ export default function CreateAccount() {
         email,
         password
       );
-      console.log(credentials.user);
+      // console.log(credentials.user);
       await updateProfile(credentials.user, {
         displayName: name,
       });
@@ -58,7 +58,7 @@ export default function CreateAccount() {
     } finally {
       setLoading(false);
     }
-    console.log(name, email, password);
+    // console.log(name, email, password);
   };
   return (
     <Wrapper>
