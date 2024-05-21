@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import LoadingScreen from "./components/loading-screen";
 import { auth } from "./firebase";
 import ProtectedRoute from "./components/protected-route";
+import PopularSearches from "./components/PopularSearchesWrapper";
+import FollowingFriends from "./components/FollowingFriends";
 
 const router = createBrowserRouter([
   {
@@ -57,28 +59,77 @@ const GlobalStyles = createGlobalStyle`
     font-family: "nanayangFont", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 20px;
     font-weight: bold;
+    margin: 0;
+    padding: 0;
   }
 `;
+
 const Wrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 4fr;
   height: 100vh;
+  font-weight: bold;
+  font-size: 24px;
+`;
+
+const MainContent = styled.div`
   display: flex;
+  align-items: center;
   justify-content: center;
+`;
+const LeftColumn = styled.div`
+  /* display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; */
+  padding: 50px 0;
 `;
 
 function App() {
   const [isLoading, setLoading] = useState(true);
+
   const init = async () => {
     await auth.authStateReady();
     setLoading(false);
   };
+
   useEffect(() => {
     init();
   }, []);
+
   return (
-    <Wrapper>
-      <GlobalStyles />
-      {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
-    </Wrapper>
+    <>
+      {isLoading ? (
+        <LoadingScreen />
+      ) : (
+        <Wrapper>
+          <GlobalStyles />
+          <LeftColumn>
+            <FollowingFriends />
+            <PopularSearches />
+          </LeftColumn>
+          <MainContent>
+            <RouterProvider router={router} />
+          </MainContent>
+        </Wrapper>
+      )}
+    </>
+    // <Wrapper>
+    //   <GlobalStyles />
+    //   {isLoading ? (
+    //     <LoadingScreen />
+    //   ) : (
+    //     <>
+    //       <LeftColumn>
+    //         <FollowingFriends />
+    //         <PopularSearches />
+    //       </LeftColumn>
+    //       <MainContent>
+    //         <RouterProvider router={router} />
+    //       </MainContent>
+    //     </>
+    //   )}
+    // </Wrapper>
   );
 }
 
