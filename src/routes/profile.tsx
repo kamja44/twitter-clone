@@ -5,10 +5,12 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import {
   collection,
+  doc,
   getDocs,
   limit,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { ITweet } from "../components/timeline";
@@ -49,11 +51,30 @@ const Tweets = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
+const EditNameButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
+`;
+const NameInput = styled.input`
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 24px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+`;
 
 export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [editingName, setEditingName] = useState(false);
+  const [name, setName] = useState(user?.displayName || "Anonymouse");
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -93,6 +114,31 @@ export default function Profile() {
   useEffect(() => {
     fetchTweets();
   }, []);
+  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+  const onSaveName = async () => {
+    if (!user) return;
+    await updateProfile(user, {
+      displayName: name,
+    });
+    setEditingName(false);
+
+    const tweetUpdates = tweets.map(async (tweet) => {
+      const tweetRef = doc(db, "tweets", tweet.id);
+      await updateDoc(tweetRef, {
+        username: name,
+      });
+    });
+    await Promise.all(tweetUpdates);
+
+    setTweets((prevTweets) =>
+      prevTweets.map((tweet) => ({
+        ...tweet,
+        username: name,
+      }))
+    );
+  };
   return (
     <Wrapper>
       <AvatarUpload htmlFor="avatar">
@@ -115,7 +161,20 @@ export default function Profile() {
         type="file"
         accept="image/*"
       />
-      <Name>{user?.displayName ? user.displayName : "Anonymous"}</Name>
+      {editingName ? (
+        <>
+          <NameInput value={name} onChange={onNameChange} />
+          <EditNameButton onClick={onSaveName}>Save</EditNameButton>
+        </>
+      ) : (
+        <>
+          <Name>{name}</Name>
+          <EditNameButton onClick={() => setEditingName(true)}>
+            Edit Name
+          </EditNameButton>
+        </>
+      )}
+      {/* <Name>{user?.displayName ? user.displayName : "Anonymous"}</Name> */}
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />
