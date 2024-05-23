@@ -22,6 +22,7 @@ const Title = styled.h3`
   font-size: 30px;
   font-weight: bold;
   border-bottom: 1px solid white;
+  margin-bottom: 20px;
 `;
 
 const List = styled.ul`

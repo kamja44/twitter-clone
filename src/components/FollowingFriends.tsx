@@ -1,11 +1,11 @@
 import styled from "styled-components";
 
-const followingFriends = ["kimchi", "kamja", "kokuma", "kimbob", "kimotti?"];
+const followingFriends = ["니꼬", "kimchi", "kamja", "kokuma", "kimbob"];
 const Wrapper = styled.div`
   background-color: #ff7f50;
   padding: 10px;
   border-radius: 5px;
-  width: 50%;
+  width: 60%;
   border: 1px solid white;
   margin: auto;
   margin-bottom: 200px;
@@ -15,6 +15,7 @@ const Title = styled.h3`
   font-size: 30px;
   font-weight: bold;
   border-bottom: 1px solid white;
+  margin-bottom: 20px;
 `;
 
 const List = styled.ul`
@@ -30,7 +31,7 @@ const ListItem = styled.li`
 const FollowingFriends = () => {
   return (
     <Wrapper>
-      <Title>팔로잉 중인 친구</Title>
+      <Title>인플루언서</Title>
       <List>
         {followingFriends.map((friend, index) => (
           <ListItem key={index}>{friend}</ListItem>
